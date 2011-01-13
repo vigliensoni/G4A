@@ -1,0 +1,13 @@
+#!/bin/bash
+
+cd;
+cd aruspix4gamera/trunk/
+python setup.py build;
+sudo python setup.py install;
+cd scripts/;
+# python aruspix_rec -n 5 ../test.xml ../
+aruspix_rec ../ac20.xml ../../../Pages_map2/aa/
+
+
+
+

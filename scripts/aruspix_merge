@@ -1,0 +1,104 @@
+#!/usr/bin/python
+
+#
+# aruspix_groundtruth - load groundtruth of music symbols 
+#				and generate page glyphs from them
+#               this file is part of the aruspix toolkit for gamera
+#				uses arupsix files for input and output
+#
+# Authors:  Laurent Pugin	2008
+#           Jason Hockman	2008
+# 
+# Based partially of otr4gamera and psaltiki4gamera  
+# Authors:  Christoph Dalitz  2004-2005
+#           Thomas Karsten    2004
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+
+# initialization
+import sys
+import os
+import re
+import os.path
+
+from gamera.core import *
+from gamera.config import config
+from gamera import gamera_xml
+from gamera import knn
+
+from gamera.toolkits.aruspix.ax_page import *
+from gamera.toolkits.aruspix.ax_file import *
+#from gamera.toolkits.ax.plugins import *
+
+#
+# parse command line arguments
+#
+class c_opt:
+	dirname = ""
+	outfile = ""
+	verbose = 1
+	def error_exit(self):
+		usage = "Usage:\n\t" + sys.argv[0] + " [<options>] <dirname> <outfile>\n" + \
+				"Options:\n" + \
+				"\t-v <lev>  verbose level ([" + ("%d" % opt.verbose) + "])\n"
+		sys.stderr.write(usage)
+		sys.exit(1)
+opt = c_opt()
+
+i = 1
+while i < len(sys.argv):
+	if sys.argv[i] == "-v":
+		i += 1; opt.verbose = int(sys.argv[i])
+	elif sys.argv[i][0] == '-':
+		opt.error_exit()
+	else:
+		opt.dirname = sys.argv[i]
+		i += 1
+		opt.outfile = sys.argv[i]
+	i += 1
+
+if (opt.dirname == "") or not os.path.exists(opt.dirname):
+	sys.stderr.write("File '" + opt.dirname + "' not found\n")
+	opt.error_exit()
+
+if (opt.outfile == ""):
+	sys.stderr.write("No output file\n")
+	opt.error_exit()
+
+# prevent gamera from parsing arguments
+sys.argv = []
+
+init_gamera()
+
+if opt.verbose >= 1:
+	config.set("progress_bar",True)
+
+classifier = knn.kNNInteractive()
+classifier.clear_glyphs()
+
+rseqn = list(os.listdir(opt.dirname))
+
+for filename in rseqn:
+	(root, ext) = os.path.splitext(filename)
+	if ext in set(['.axz']) and not root.startswith("."):
+		print filename
+		f = AxFile(os.path.join(opt.dirname,filename), "")
+		classifier.merge_from_xml_filename(f.tmpdirname + "classifier.xml")
+		
+classifier.to_xml_filename(opt.outfile,True)
+
+
+
+
+
+
+

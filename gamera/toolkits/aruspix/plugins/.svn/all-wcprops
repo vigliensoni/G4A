@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 69
+/svn/aruspix4gamera/!svn/ver/61/trunk/gamera/toolkits/aruspix/plugins
+END
+aruspix_plugin.py
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/aruspix4gamera/!svn/ver/16/trunk/gamera/toolkits/aruspix/plugins/aruspix_plugin.py
+END
+aruspix_plugin.pyc
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/aruspix4gamera/!svn/ver/61/trunk/gamera/toolkits/aruspix/plugins/aruspix_plugin.pyc
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/aruspix4gamera/!svn/ver/8/trunk/gamera/toolkits/aruspix/plugins/__init__.py
+END
+_aruspix_plugin.cpp
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/aruspix4gamera/!svn/ver/16/trunk/gamera/toolkits/aruspix/plugins/_aruspix_plugin.cpp
+END

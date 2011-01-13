@@ -1,0 +1,139 @@
+#!/Library/Frameworks/Python.framework/Versions/2.6/Resources/Python.app/Contents/MacOS/Python
+
+#
+# aruspix_rec - recognition of music symbols in gamera
+#               this file is part of the aruspix toolkit for gamera
+#				uses arupsix files for input and output
+#
+# Authors:  Laurent Pugin	2008
+#           Jason Hockman	2008
+# 
+# Based partially of otr4gamera and psaltiki4gamera  
+# Authors:  Christoph Dalitz  2004-2005
+#           Thomas Karsten    2004
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License
+# as published by the Free Software Foundation; either version 2
+# of the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+# 
+
+# initialization
+import sys
+import os
+import re
+import os.path
+
+from gamera.core import *
+from gamera.config import config
+from gamera import knn
+from gamera.classify import BasicGroupingFunction, ShapedGroupingFunction
+
+from gamera.toolkits.aruspix.ax_page import *
+from gamera.toolkits.aruspix.ax_file import *
+#from gamera.toolkits.ax.plugins import *
+
+# LP basic command line option, I left what seemed useful for us
+# LP probably you will have to complete staff removal algorithm choice and params
+# LP probably we will also have to add further output options
+# LP for now, we can start with images as input and textfile as output, but then we
+# LP can swith to Aruspix files (zip archives with everything in it)
+
+#
+# parse command line arguments
+#
+class c_opt:
+	infile = ""
+	outfile = ""
+	verbose = 1
+	num_lines = 0
+	#stremoval = "fujinaga"
+	def error_exit(self):
+		usage = "Usage:\n\t" + sys.argv[0] + " [<options>] <infile>\n" + \
+				"Options:\n" + \
+				"\t-n <num>  number of staff lines (autoguessed when omitted)\n" + \
+				"\t-v <lev>  verbose level ([" + ("%d" % opt.verbose) + "])\n"
+				#"\t-stremoval  indicates the staff removal algorithm \n" + \
+				#"\t          possible values: 'fujinaga', 'TO BE COMPLETED' ['" + self.stremoval  + "']\n"
+		sys.stderr.write(usage)
+		sys.exit(1)
+opt = c_opt()
+
+i = 1
+while i < len(sys.argv):
+	if sys.argv[i] == "-o":
+		i += 1; opt.outfile = sys.argv[i]
+	elif sys.argv[i] == "-n":
+		i += 1; opt.num_lines = int(sys.argv[i])
+	elif sys.argv[i] == "-v":
+		i += 1; opt.verbose = int(sys.argv[i])
+	#elif sys.argv[i] == '-stremoval':
+	#	i += 1; opt.stremoval = sys.argv[i]
+	elif sys.argv[i][0] == '-':
+		opt.error_exit()
+	else:
+		opt.infile = sys.argv[i]
+	i += 1
+
+if (opt.infile == "") or not os.path.isfile(opt.infile):
+	sys.stderr.write("File '" + opt.infile + "' not found\n")
+	opt.error_exit()
+
+if (opt.outfile == ""):
+	opt.outfile = opt.infile
+
+# prevent gamera from parsing arguments
+sys.argv = []
+
+init_gamera()
+
+f = AxFile(opt.infile, "")
+
+if opt.verbose >= 1:
+	config.set("progress_bar",True)
+
+#
+# load an image, create a AxPage object and remove staves
+# extract plan 0, i.e. music staves 
+# don't know why, but has to be converted to greyscale
+#
+original=f.get_img0().extract(0)
+rot = 0
+skew = original.rotation_angle_projections(-2,2)
+if (abs(skew[0]) > abs(skew[1])):
+	rot = skew[0]
+print rot
+image = original.to_greyscale()
+#image.save_tiff("page0.tif")
+image = image.rotate(rot, 0)
+#image = image.correct_rotation(1)
+
+# LP Maybe we will have to flip the black and white pixels
+# do quested preprocessing
+if image.data.pixel_type != ONEBIT:
+	print "Convert to ONEBIT"
+	image = image.to_onebit()
+	
+# we create the page	
+page=AxPage(image, opt.num_lines)
+# LP I leave you change this to match the experiments you did on staff removal
+page.remove_staves(crossing_symbols='all', num_lines=opt.num_lines )
+
+
+# rotate backwards and crop the image 
+image = page.image.rotate(-rot, 0)
+ul = Point((image.width - original.width)/2,(image.height - original.height)/2)
+image = SubImage(image, ul, original.dim)
+image.save_tiff( f.tmpdirname + "img2.tif")
+f.add_comment("img2.tif generated with aruspix4gamera, linetracking, all")
+f.save()
+
+#
+# output the results
+#
+
