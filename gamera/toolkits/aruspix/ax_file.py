@@ -17,28 +17,20 @@ import tempfile
 
 # LP rough adaptation from otr_staff.py, leave you check what is needed...
 class AxFile:
-##############################################################################
-    """Manipulates an Aruspix file and stores its information.
-    
-An object of this class provides the following functionality:
-
-- Read (unzip) the file
-- Write (zip) the file
-
-.. note:: 
-
-A *AxFile* object has several public properties, that can be manipulated by
-the user. The following table gives a detailed view on this.
-
-+-----------------------+---------------------------------------------------+
-| TODO                  | TODO                                              |
-+-----------------------+---------------------------------------------------+
-
-
-.. _constructor: gamera.toolkits.aruspix.ax_page.AxFile.html#init
-
-:Author: Laurent Pugin and Jason Hockman
-"""
+    """
+        Manipulates an Aruspix file and stores its information.    
+        An object of this class provides the following functionality:
+        - Read (unzip) the file
+        - Write (zip) the file
+        .. note:: 
+        A *AxFile* object has several public properties, that can be manipulated by
+        the user. The following table gives a detailed view on this.
+        +-----------------------+---------------------------------------------------+
+        | TODO                  | TODO                                              |
+        +-----------------------+---------------------------------------------------+
+        .. _constructor: gamera.toolkits.aruspix.ax_page.AxFile.html#init
+        :Author: Laurent Pugin and Jason Hockman
+    """
 
     ######################################################################
     # constructor
@@ -47,35 +39,23 @@ the user. The following table gives a detailed view on this.
     # 
     def __init__(self, filename, tmpdir):
         """Constructs and returns a *AxFile* object.
-
-Signature:
-
-  ``__init__(filename, tmpdir)``
-
-with
-
-  *filename*:
-    The name of the Aruspix file to be opened.
-
-  *tmpdir*:
-    The directory where to extract the file content.
-"""
+            Signature:
+              ``__init__(filename, tmpdir)``
+            with
+              *filename*:
+                The name of the Aruspix file to be opened.
+              *tmpdir*:
+                The directory where to extract the file content.
+        """
         self.filename = filename
         self.tmpdir = tmpdir
         self.deletedir = False
-        
-        print "Initializing toolkit..."
-        
         if self.tmpdir == "":
             self.tmpdir = tempfile.mkdtemp()
             self.deletedir = True
-            # os.mkdir(self.tmpdir)
-        #print self.tmpdir
-        #print self.filename
-        # self.tmpdirname = self.tmpdir + str(os.path.normcase('/'))
+            
         zip = zipfile.ZipFile(self.filename, 'r') 
         for name in zip.namelist():
-            #print self.tmpdir + str(os.path.normcase('/')) + name
             file(os.path.join(self.tmpdir, name), 'wb').write(zip.read(name))
             
         # some basic verifications
@@ -92,12 +72,10 @@ with
     #
     def __del__(self):
         """Delete tmpdir if necessary. Does not recursively delete the directory, will fail
-if subdirectories are included
-
-Signature:
-
-  ``__del__()``
-"""
+            if subdirectories are included
+            Signature:
+              ``__del__()``
+        """
         if self.deletedir == True:
             for name in os.listdir(self.tmpdir):
                 # print self.tmpdir + str(os.path.normcase('/')) + name
@@ -112,16 +90,12 @@ Signature:
     #       
     def save(self, filename = "" ):
         """Save the Aruspix file.
-
-Signature:
-
-  ``save( filename = "")``
-
-with
-
-  *filename*:
-    The filename. If empty, overwrite the file
-"""
+            Signature:
+              ``save( filename = "")``
+            with
+              *filename*:
+                The filename. If empty, overwrite the file
+        """
         if  filename != "":
             self.filename = filename
             
@@ -140,16 +114,12 @@ with
     #       
     def add_comment(self, text ):
         """Add a simple comment to the gamera.txt file in the Aruspix file.
-
-Signature:
-
-  ``add_comment( text )``
-
-with
-
-  *text*:
-    The comment that is going to be appended to gamera.txt
-""" 
+            Signature:
+            ``add_comment( text )``
+            with    
+            *text*:
+            The comment that is going to be appended to gamera.txt
+        """
         f = open(os.path.join(self.tmpdir, "gamera.txt"), "a" )
         f.write( text ) 
         f.close()
@@ -163,11 +133,9 @@ with
     #       
     def get_img0(self):
         """Returns the image img0 (pre-classified image) from the Aruspix file.
-        
-Signature:
-
-  ``get_img0()``
-"""
+            Signature:
+            ``get_img0()``
+        """
         if os.path.exists(os.path.join(self.tmpdir, "img0.tif")) == False:
             return None
         else:
@@ -181,22 +149,20 @@ Signature:
     #       
     def get_img1(self):
         """Returns the image img1 (original greyscale image) from the Aruspix file.
-
-Signature:
-
-  ``get_img1()``
-"""
+            Signature:    
+            ``get_img1()``
+        """
         if os.path.exists(os.path.join(self.tmpdir, "img1.tif")) == False:
             return None
         else:
             return load_image(os.path.join(self.tmpdir, "img1.tif"))
 
-    ######################################################################
-    # TifFile
-    #
-    # 2010-05-14 Gabriel Vigliensoni 
-    #
 
+######################################################################
+# TifFile
+#
+# 2010-05-14 Gabriel Vigliensoni 
+#
 class TifFile:
     def __init__(self, filename, tmpdir):
         self.f = filename
@@ -204,12 +170,11 @@ class TifFile:
     def filename(self):
         return self.f
         
-    ######################################################################
-    # dirEntries
-    #
-    # 2010-05-19 Gabriel Vigliensoni 
-    #
-
+######################################################################
+# dirEntries
+#
+# 2010-05-19 Gabriel Vigliensoni 
+#
 class Tools:
     @staticmethod   
     def dirEntries(dir_name, subdir, *args):
