@@ -15,41 +15,39 @@ from gamera.toolkits.musicstaves import MusicStaves_linetracking as MusicStaves
 #from gamera.toolkits.musicstaves import *
 from gamera.toolkits.aruspix.ax_staff import AxStaff
 
-# LP rough adaptation from otr_staff.py, leave you check what is needed...
 class AxPage:
-##############################################################################
     """Stores a tablature and its information (e.g. staff position).
-    
-An object of this class provides the following functionality:
-
-- Staff line removal
-- Return the information *staff number* for a given (x,y) position
-- Return a list of staff bounding boxes
-- Removal of regions outside any staff
-
-.. note:: The removal of the staff lines is done by the inherited
-          *MusicStaves* object. Thus, the *MusicStaves* toolkit is required.
-
-A *AxPage* object has several public properties, that can be manipulated by
-the user. The following table gives a detailed view on this.
-
-+-----------------------+---------------------------------------------------+
-| ``music_staves``      | The inherited *MusicStaves* object.               |
-+-----------------------+---------------------------------------------------+
-| ``image``             | A reference to ``music_staves.image``             |
-|                       | (for convenience).                                |
-+-----------------------+---------------------------------------------------+
-| ``staffline_height``  | A reference to ``music_staves.staffline_height``  |
-+-----------------------+---------------------------------------------------+
-| ``staffspace_height`` | A reference to ``music_staves.staffspace_height`` |
-+-----------------------+---------------------------------------------------+
-| ``staff_height``      | The staff bounding box height                     |
-+-----------------------+---------------------------------------------------+
-
-.. _constructor: gamera.toolkits.aruspix.ax_page.AxPage.html#init
-
-:Author: Laurent Pugin and Jason Hockman
-"""
+        
+        An object of this class provides the following functionality:
+        
+        - Staff line removal
+        - Return the information *staff number* for a given (x,y) position
+        - Return a list of staff bounding boxes
+        - Removal of regions outside any staff
+        
+        .. note:: The removal of the staff lines is done by the inherited
+                  *MusicStaves* object. Thus, the *MusicStaves* toolkit is required.
+                  
+        A *AxPage* object has several public properties, that can be manipulated by
+        the user. The following table gives a detailed view on this.
+        
+        +-----------------------+---------------------------------------------------+
+        | ``music_staves``      | The inherited *MusicStaves* object.               |
+        +-----------------------+---------------------------------------------------+
+        | ``image``             | A reference to ``music_staves.image``             |
+        |                       | (for convenience).                                |
+        +-----------------------+---------------------------------------------------+
+        | ``staffline_height``  | A reference to ``music_staves.staffline_height``  |
+        +-----------------------+---------------------------------------------------+
+        | ``staffspace_height`` | A reference to ``music_staves.staffspace_height`` |
+        +-----------------------+---------------------------------------------------+
+        | ``staff_height``      | The staff bounding box height                     |
+        +-----------------------+---------------------------------------------------+
+        
+        .. _constructor: gamera.toolkits.aruspix.ax_page.AxPage.html#init
+        
+        :Author: Laurent Pugin and Jason Hockman
+    """
 
     ######################################################################
     # constructor
@@ -57,45 +55,38 @@ the user. The following table gives a detailed view on this.
     # 2008-01-15
     #
     def __init__(self, img, staffline_height=0, staffspace_height=0):
-        """Constructs and returns a *AxPage* object.
+        """Constructs and returns a *AxPage* object.        
+            Signature:
+              ``__init__(img, staffline_height=0, staffspace_height=0)``
+            with
+              *img*:
+                Onebit or greyscale image a *AxPage* should be created of.
+              *staffline_height*:
+                Vertical thickness of a staff line. When not specified here, it will be
+                detected automatically.
+              *staffspace_height*:
+                Thickness of the vertical space between adjacent staff lines. When not
+                specified here, it will be detected automatically.
+        """
         
-Signature:
-
-  ``__init__(img, staffline_height=0, staffspace_height=0)``
-
-with
-
-  *img*:
-    Onebit or greyscale image a *AxPage* should be created of.
-
-  *staffline_height*:
-    Vertical thickness of a staff line. When not specified here, it will be
-    detected automatically.
-
-  *staffspace_height*:
-    Thickness of the vertical space between adjacent staff lines. When not
-    specified here, it will be detected automatically.
-"""
-
         self.image=None      # image of the tablature (reference to
                      # self.music_staves.image, see below)
         self.stafflist=[]    # list of AxStaff objects
                      # the list is created in remove_staves
-
+                     
         self.num_lines=0 # number of lines in the staves
                      # value is given of computed in remove_staves
         self.staff_height=0 # staff bounding box height
                     # value is given or computed in remove_staves
-
+                    
         # use external class module for removing the staves
         self.music_staves=MusicStaves(img, staffline_height,\
                 staffspace_height)
-
+                
         # references to important information
         self.image=self.music_staves.image
         self.staffline_height=self.music_staves.staffline_height
         self.staffspace_height=self.music_staves.staffspace_height
-
 
     #####################################################################
     # int __get_staffno(glyph_y)
@@ -128,27 +119,25 @@ with
     #
     def remove_staves(self, crossing_symbols='bars', num_lines=0, staff_height=0):
         """Detects and removes staff lines from a music image.
-
-Signature:
-
-  ``remove_staves(crossing_symbols='bars', num_lines=0, staff_height=0)``
-
-with
-
-  *crossing_symbols*:
-    Determines which symbols crossing staff lines the removal should try
-    to keep intact. In addition to the possible values are ``all``, ``bars``
-    and ``none`` (see the MusicStaves module for details).
-  
-  *num_lines*:
-    Number of lines within one staff. A value of zero means, that this number
-    should be guessed automatically.
-
-  *staff_height*:
-    Staff bounding box height. If not specified, it is automatically computed
-    with one staffspace_height above and below.
-"""
-
+            Signature:
+            
+            ``remove_staves(crossing_symbols='bars', num_lines=0, staff_height=0)``
+            
+            with
+            
+          *crossing_symbols*:
+            Determines which symbols crossing staff lines the removal should try
+            to keep intact. In addition to the possible values are ``all``, ``bars``
+            and ``none`` (see the MusicStaves module for details).
+            
+          *num_lines*:
+            Number of lines within one staff. A value of zero means, that this number
+            should be guessed automatically.
+            
+          *staff_height*:
+            Staff bounding box height. If not specified, it is automatically computed
+            with one staffspace_height above and below.
+        """
         self.num_lines=num_lines # number of lines in the staves
         self.staff_height=staff_height # staff bounding box height
 
@@ -191,18 +180,13 @@ with
     #
     def add_glyphs( self, glyphs ):
         """Add the glyphs to the page. Find the staff to which they belong.
-
-Signature:
-
-  ``add_glyphs( glyphs )``
-
-with
-
-  *glyphs*:
-    The list of glyphs that are going to be added to the page. They must have 
-    been classified before. The method will find the staff to which they belong.
-"""     
-
+            Signature:
+              ``add_glyphs( glyphs )``
+            with
+              *glyphs*:
+                The list of glyphs that are going to be added to the page. They must have 
+                been classified before. The method will find the staff to which they belong.
+        """
         for gl in glyphs:
             gl.middle_x=int(gl.offset_x+gl.ncols*0.5)
             gl.middle_y=int(gl.offset_y+gl.nrows*0.5)
@@ -222,23 +206,17 @@ with
     #
     def load_ground_truth( self, dirname="", minsize=5, no_group=False ):
         """Load the ground truth for every staff.
-
-Signature:
-
-  ``load_ground_truth( dirname, minsize, no_group )``
-
-with
-
-  *dirname*:
-    The directory where is the file.
-
-  *minsize*:
-    The size of the small glyph that will be considered. Skipped if smaller.
-
-  *no_group*:
-    Skip labels where more than one glyph per label. Otherwise add "_group._part"
-as prefix
-"""
+            Signature:
+              ``load_ground_truth( dirname, minsize, no_group )``
+            with
+              *dirname*:
+                The directory where is the file.
+              *minsize*:
+                The size of the small glyph that will be considered. Skipped if smaller.
+              *no_group*:
+                Skip labels where more than one glyph per label. Otherwise add "_group._part"
+            as prefix
+        """
         # the staff content...
         for st in self.stafflist:
             st.load_ground_truth( dirname, minsize, no_group )
@@ -251,11 +229,10 @@ as prefix
     #
     def output( self ):
         """Output the content of the page, staff by staff.
-        
-Signature:
-
-    ``output( )``
-"""     
+            Signature:
+            
+            ``output( )``
+        """     
         # standard header for Aruspix transcription files
         res = "#!MLF!#\n"
 

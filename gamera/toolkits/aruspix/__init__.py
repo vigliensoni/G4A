@@ -222,25 +222,30 @@ if has_gui.has_gui:
                 alist = Tools.dirEntries(params[1], True, 'tif', 'png')
 
             #app_path = '/Users/gabriel/Documents/code/aruspix/Debug/Aruspix.app/Contents/MacOS/Aruspix'    
-            app_path = '/Applications/Aruspix.app/Contents/MacOS/Aruspix'
+            app_path = os.path.join('Applications','Aruspix.app','Contents','MacOS','Aruspix')
             #print; print 'alist: '; print alist; print 
             
             for i_file in alist:
                 print 'Processing '; print i_file; print
                 o_file = os.path.splitext(i_file); #print 'o_file'; print o_file; print
                 if o_file[1] == '.png':
-            #       print; print "PNG"
-                    f = 'convert ' + i_file + ' -compress None ' + o_file[0] + '.tif' 
+                    #print; print "PNG"
+                    f = '/opt/local/bin/convert ' + i_file + ' -compress None ' + o_file[0] + '.tif' 
                     subprocess.Popen(f, shell = True)
                     f = app_path + ' -q -e Rec -p ' + o_file[0] + '.tif ' + o_file[0] + '.axz'
                     p = subprocess.Popen(f, shell = True)
-                    p.wait()
-                    subprocess.Popen("rm " +  o_file[0] + '.tif' , shell=True)  # erasing the created TIF               
+                    while p.returncode is None:
+                        time.sleep(1)
+                        p.poll()
+                    os.remove(o_file[0] + '.tif')
+                    # subprocess.Popen("rm " +  o_file[0] + '.tif' , shell=True)  # erasing the created TIF               
                 else:
-            #       print; print "TIF"
+                    #print; print "TIF"
                     f = app_path + ' -q -e Rec -p ' + i_file + ' ' + o_file[0] + '.axz'
                     p = subprocess.Popen(f, shell = True)
-                    p.wait()                
+                    while p.returncode is None:
+                        time.sleep(1)
+                        p.poll()                
         
                 if params[0]:
                     axfilename = o_file[0] + '.axz' #; print "axfilename: "; print axfilename; print
@@ -252,7 +257,6 @@ if has_gui.has_gui:
                         % (name, self.label ))
                 print 'Done!'
                 print
-
 # GVM
 
     AruspixPageModuleIcon.register()
