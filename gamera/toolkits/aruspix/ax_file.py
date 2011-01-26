@@ -13,6 +13,7 @@ from gamera.core import *
 import zipfile
 import os
 import warnings
+import tempfile
 
 # LP rough adaptation from otr_staff.py, leave you check what is needed...
 class AxFile:
@@ -63,21 +64,21 @@ with
         self.tmpdir = tmpdir
         self.deletedir = False
         if self.tmpdir == "":
-            self.tmpdir = os.tmpnam()
+            self.tmpdir = tempfile.mkdtemp()
             self.deletedir = True
             os.mkdir(self.tmpdir)
         #print self.tmpdir
         #print self.filename
-        self.tmpdirname = self.tmpdir + str(os.path.normcase('/'))
+        # self.tmpdirname = self.tmpdir + str(os.path.normcase('/'))
         zip = zipfile.ZipFile(self.filename, 'r') 
         for name in zip.namelist():
             #print self.tmpdir + str(os.path.normcase('/')) + name
-            file(self.tmpdirname + name, 'wb').write(zip.read(name))
+            file(os.path.join(self.tmpdir, name), 'wb').write(zip.read(name))
             
         # some basic verifications
-        if os.path.exists(self.tmpdirname + "img0.tif") == False \
-            or os.path.exists(self.tmpdirname + "img1.tif") == False \
-            or os.path.exists(self.tmpdirname + "index.xml") == False:
+        if os.path.exists(os.path.join(self.tmpdir, "img0.tif")) == False \
+            or os.path.exists(os.path.join(self.tmpdir, "img1.tif")) == False \
+            or os.path.exists(os.path.join(self.tmpdir, "index.xml")) == False:
             warnings.warn("The minimal content of the Aruspix file seems to be missing")
 
 
