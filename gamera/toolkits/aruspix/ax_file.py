@@ -63,10 +63,13 @@ with
         self.filename = filename
         self.tmpdir = tmpdir
         self.deletedir = False
+        
+        print "Initializing toolkit..."
+        
         if self.tmpdir == "":
             self.tmpdir = tempfile.mkdtemp()
             self.deletedir = True
-            os.mkdir(self.tmpdir)
+            # os.mkdir(self.tmpdir)
         #print self.tmpdir
         #print self.filename
         # self.tmpdirname = self.tmpdir + str(os.path.normcase('/'))
@@ -225,10 +228,6 @@ class Tools:
                 fileList.extend(Tools.dirEntries(dirfile, subdir, *args))
         return fileList
         
-
-
-                    
-                    
 # GVM
 
 
