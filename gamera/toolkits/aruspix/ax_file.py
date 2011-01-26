@@ -98,7 +98,7 @@ Signature:
         if self.deletedir == True:
             for name in os.listdir(self.tmpdir):
                 # print self.tmpdir + str(os.path.normcase('/')) + name
-                os.remove(self.tmpdirname + name)
+                os.remove(os.path.join(self.tmpdir, name))
             os.rmdir(self.tmpdir)
             
             
@@ -125,7 +125,7 @@ with
         zip = zipfile.ZipFile(self.filename, 'w') 
         for name in os.listdir(self.tmpdir):
             #print name
-            zip.write(self.tmpdirname + name, name)
+            zip.write(os.path.join(self.tmpdir, name), name)
         
         zip.close()
         
@@ -147,7 +147,7 @@ with
   *text*:
     The comment that is going to be appended to gamera.txt
 """ 
-        f = open( self.tmpdirname + "gamera.txt", "a" )
+        f = open(os.path.join(self.tmpdir, "gamera.txt"), "a" )
         f.write( text ) 
         f.close()
     
@@ -165,10 +165,10 @@ Signature:
 
   ``get_img0()``
 """
-        if os.path.exists(self.tmpdirname + "img0.tif") == False:
+        if os.path.exists(os.path.join(self.tmpdir, "img0.tif")) == False:
             return None
         else:
-            return load_image(self.tmpdirname + "img0.tif")
+            return load_image(os.path.join(self.tmpdir, "img0.tif"))
             
         
     ######################################################################
@@ -183,10 +183,10 @@ Signature:
 
   ``get_img1()``
 """
-        if os.path.exists(self.tmpdirname + "img1.tif") == False:
+        if os.path.exists(os.path.join(self.tmpdir, "img1.tif")) == False:
             return None
         else:
-            return load_image(self.tmpdirname + "img1.tif")
+            return load_image(os.path.join(self.tmpdir, "img1.tif"))
 
     ######################################################################
     # TifFile
