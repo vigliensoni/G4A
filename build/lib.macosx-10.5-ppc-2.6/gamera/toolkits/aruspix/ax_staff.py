@@ -5,63 +5,55 @@
 
 import os
 
-
-##############################################################################
 class AxStaff:
-##############################################################################
     """Class for storing a list of image objects.
-
-An object of the class *AxStaff* provides the following functionality:
-
- - Storing all connected components (glyphs) of a staff in a list
- - Providing information about the staff position
- - Sorting glyphs by their x positions in the staff
- - Output of all glyphs in a specified format
-
-The constructor_ of a *AxStaff* object adds several public properties
-to each image of its image list.
-
-.. _constructor: gamera.toolkits.aruspix.ax_staff.AxStaff.html#init
-
-:Author: Laurent Pugin and Jason Hockman
-"""
+        An object of the class *AxStaff* provides the following functionality:
+         - Storing all connected components (glyphs) of a staff in a list
+         - Providing information about the staff position
+         - Sorting glyphs by their x positions in the staff
+         - Output of all glyphs in a specified format
+        The constructor_ of a *AxStaff* object adds several public properties
+        to each image of its image list.
+        .. _constructor: gamera.toolkits.aruspix.ax_staff.AxStaff.html#init
+        :Author: Laurent Pugin and Jason Hockman
+    """
 
     ######################################################################
     # constructor
     #
     def __init__(self, staff, staff_height, ymax, staffspace_height, staffline_height):
         """Creates and returns a *AxStaff* object.
-
-Signature:
-
-  ``__init__(staff, staff_height, ymax, staffspace_height, staffline_height)``
-
-with
-
-  *staff*:
-    StaffObj as return by get_staffpos from ``MusicStaves``
-
-  *staff_height*:
-    The staff bounding box height, as specified in AxPage
-
-  *ymax*:
-    The maximum y value, i.e. as in the original image (to avoid 
-    overflow).
-
-A *AxStaff* contains the public properties as described below:
-
-+-----------------------+---------------------------------------------------+
-| TODO                  |                                                   |
-+-----------------------+---------------------------------------------------+
-
-Additionally, new public properties are introduced in the constructor of this
-object
-
-+-----------------------+---------------------------------------------------+
-| TODO                  |                                                   |
-+-----------------------+---------------------------------------------------+
-
-"""
+            
+            Signature:
+            
+              ``__init__(staff, staff_height, ymax, staffspace_height, staffline_height)``
+              
+            with
+            
+              *staff*:
+                StaffObj as return by get_staffpos from ``MusicStaves``
+                
+              *staff_height*:
+                The staff bounding box height, as specified in AxPage
+                
+              *ymax*:
+                The maximum y value, i.e. as in the original image (to avoid 
+                overflow).
+                
+            A *AxStaff* contains the public properties as described below:
+            
+            +-----------------------+---------------------------------------------------+
+            | TODO                  |                                                   |
+            +-----------------------+---------------------------------------------------+
+            
+            Additionally, new public properties are introduced in the constructor of this
+            object
+            
+            +-----------------------+---------------------------------------------------+
+            | TODO                  |                                                   |
+            +-----------------------+---------------------------------------------------+
+            
+        """
         self.glyphs=[] # list of glyphs
                 # the glyphs are added in set_glyph
         self.ground_truth_glyphs=[] # the list of ground truth glyphs
@@ -116,31 +108,29 @@ object
     # 2008-01-15
     #
     def load_ground_truth( self, dirname="", minsize=5, no_group=False ):
-        """Load the ground truth file staff_X_0.nplab, where X is the staffno - 1.
-This method ignore the staff segments and load only the first one (usually there is 
-only one, so it will load most of the ground truth data)
-
-Signature:
-
-  ``load_ground_truth( dirname, minsize, no_group )``
-
-with
-
-  *dirname*:
-    The directory where is the file.
-
-  *minsize*:
-    The size of the small glyph that will be considered. Skipped if smaller.
-
-  *no_group*:
-    Skip labels where more than one glyph per label. Otherwise add "_group._part"
-as prefix
-"""
+        """
+        Load the ground truth file staff_X_0.nplab, where X is the staffno - 1.
+        This method ignore the staff segments and load only the first one (usually there is 
+        only one, so it will load most of the ground truth data)
+        
+        Signature:
+        
+        ``load_ground_truth( dirname, minsize, no_group )``
+        with
+        
+        *dirname*:
+            The directory where is the file.
+        *minsize*:
+            The size of the small glyph that will be considered. Skipped if smaller.
+        *no_group*:
+            Skip labels where more than one glyph per label. Otherwise add "_group._part"
+        as prefix
+        """
         self.ground_truth_glyphs=[]
         # generate file name and check if it exists
         fname = dirname + "staff_" + str(self.staffno -1) + ".0.nplab"
         #print fname
-        if os.path.exists(fname) == False:
+        if not os.path.exists(fname):
             print "file", fname, "not found"
             return
 
@@ -188,7 +178,7 @@ as prefix
                     t = [(1.0/len(gtg[3]), name)] # confidence and name
                     # manually classifiy
                     gl.classify_manual(t) 
-
+                    
     ######################################################################
     # add_glyph( glyphs )
     #
@@ -196,16 +186,15 @@ as prefix
     #
     def add_glyph( self, glyph ):
         """Add the glyph to the staff. Sort according to the middle_x position
-
-Signature:
-
-  ``add_glyph( glyph )``
-
-with
-
-  *glyph*:
-    The glyph that is going to be added.
-"""     
+        Signature:
+        
+        ``add_glyph( glyph )``
+        
+        with
+        
+        *glyph*:
+        The glyph that is going to be added.
+        """     
         self.glyphs.append(glyph)
         self.glyphs.sort(lambda x, y: cmp(x.middle_x,y.middle_x))
 
@@ -293,16 +282,14 @@ with
     
     def output( self ):
         """Output the content of the staff, glyph by glyph.
+        Signature:
+        ``output( )``
+        """
         
-Signature:
-
-    ``output( )``
-"""
-        
-		res = ""
+        res = ""
         # for each glyph in staff
         for gl in self.glyphs:
-      		# str_id is the glyph name
+            # str_id is the glyph name
             str_id = str(gl.id_name)
             # find string character number bt. 2 items in id_name
             b = str_id.find(' ') + 2
@@ -323,8 +310,6 @@ Signature:
             if str_id == "SKIP":
                 continue
             else:
-            
-            
                 # # pitch from c1
                 # pitch_from_c1 = -(gl.center_y - self.yposlist[len(self.yposlist)-1]) / \
                 #             (len(self.yposlist)-1) / 2
@@ -380,7 +365,7 @@ Signature:
                 elif str_id.startswith('P'):
                     pitch = center_pos
                     pp_flag = 1
-            	            
+                            
                 # K
                 elif str_id.startswith('K_U') | str_id.startswith('K_C'):
                     pitch = center_pos
@@ -405,7 +390,7 @@ Signature:
                         gflag = 0
                     pp_flag = 1
                 
-				# N_1, N_2
+                # N_1, N_2
                 elif str_id.startswith('N_1') | str_id.startswith('N_2'):
                     pitch = center_pos
                     pp_flag = 1
@@ -417,7 +402,7 @@ Signature:
                     row_width = []
                     for n in range(0,len(dummy_1)):
                         row_width += [dummy_1[n]+dummy_2[n]]
-                    	pitch = self.__min_index(row_width) + upper_pos
+                        pitch = self.__min_index(row_width) + upper_pos
                     if str_id.endswith('.1'):
                         gflag = 1
                     else:
@@ -478,60 +463,60 @@ Signature:
                         str_id = str_id + "_" + notecode
                 elif pp_flag == 2:
                     index = self.__clef_point(self.yposlist[-1] - pitch, self.staffspace_height + self.staffline_height)
-					str_id = str_id + str(index)
+                    str_id = str_id + str(index)
                 # print str_id
                     
                 # res is the staff number that houses the glyphs
                 res += str(gl.offset_x) + " " + str(gl.offset_x+gl.ncols) + " " + str_id + "\n"
         
-    	if len(res) == 0:
-			return res # do not print empty staves
-			
-		# standard header for the staff
-	    outstr = "\"*/staff_" + str(self.staffno - 1) + ".0.lab\"\n"
-		outstr += res
+        if len(res) == 0:
+            return res # do not print empty staves
+            
+        # standard header for the staff
+        outstr = "\"*/staff_" + str(self.staffno - 1) + ".0.lab\"\n"
+        outstr += res
         outstr += ".\n"
         return  outstr
 
 
     def output_nopitch( self ):
         """Output the content of the staff, glyph by glyph.
-
-Signature:
-
-    ``output_nopitch( )``
-"""		
-		res = ""
-		# for each glyph in staff
-		for gl in self.glyphs:
-      		# str_id is the glyph name
-			str_id = str(gl.id_name)
-			# find string character number bt. 2 items in id_name
-			b = str_id.find(' ') + 2
-			# condense str_id by removing last characters
-			str_id = str_id[b:-3]	
-			# replace the . with a _
-			str_id = str_id.replace ('.','_')
-			# capitalize string
-			str_id = str_id.upper()
-			# if str_id starts with a N
-			if str_id.startswith('N'):
-				# replace _ with .
-				str_id = str_id.replace('_','.')
-				# replace . with _ followed by 1 for flags
-				str_id = str_id.replace ('.','_',1)
-				
-		    # ****************************
+        
+        Signature:
+        
+        ``output_nopitch( )``
+        """     
+        res = ""
+        # for each glyph in staff
+        for gl in self.glyphs:
+            # str_id is the glyph name
+            str_id = str(gl.id_name)
+            # find string character number bt. 2 items in id_name
+            b = str_id.find(' ') + 2
+            # condense str_id by removing last characters
+            str_id = str_id[b:-3]   
+            # replace the . with a _
+            str_id = str_id.replace ('.','_')
+            # capitalize string
+            str_id = str_id.upper()
+            # if str_id starts with a N
+            if str_id.startswith('N'):
+                # replace _ with .
+                str_id = str_id.replace('_','.')
+                # replace . with _ followed by 1 for flags
+                str_id = str_id.replace ('.','_',1)
+                
+            # ****************************
             if str_id == "SKIP":
                 continue
-            else:	
-				res += str(gl.offset_x) + " " + str(gl.offset_x+gl.ncols) + " " + str_id + "\n"
+            else:   
+                res += str(gl.offset_x) + " " + str(gl.offset_x+gl.ncols) + " " + str_id + "\n"
 
-    	if len(res) == 0:
-			return res # do not print empty staves
+        if len(res) == 0:
+            return res # do not print empty staves
 
-		# standard header for the staff
-	    outstr = "\"*/staff_" + str(self.staffno - 1) + ".0.lab\"\n"
-		outstr += res
+        # standard header for the staff
+        outstr = "\"*/staff_" + str(self.staffno - 1) + ".0.lab\"\n"
+        outstr += res
         outstr += ".\n"
         return  outstr

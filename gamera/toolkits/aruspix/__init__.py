@@ -14,6 +14,7 @@ import os # GVM
 import fnmatch # GVM
 import plugins
 import subprocess # GVM
+import time
 
 from gamera import knn
 from gamera.core import *
@@ -215,46 +216,61 @@ if has_gui.has_gui:
                 return      
             if params[0]:   
             #   print 'it is a single file: '
-            #   print params[0]
+                # print params[0]
                 alist.append(params[0])
             else:                           ## It is a folder
             #   print "yes! a folder"; print
                 alist = Tools.dirEntries(params[1], True, 'tif', 'png')
 
             #app_path = '/Users/gabriel/Documents/code/aruspix/Debug/Aruspix.app/Contents/MacOS/Aruspix'    
-            app_path = os.path.join('Applications','Aruspix.app','Contents','MacOS','Aruspix')
+            # app_path = os.path.join('Applications','Aruspix.app','Contents','MacOS','Aruspix')
+            app_path = '/Applications/Aruspix.app/Contents/MacOS/Aruspix'
             #print; print 'alist: '; print alist; print 
             
             for i_file in alist:
                 print 'Processing '; print i_file; print
-                o_file = os.path.splitext(i_file); #print 'o_file'; print o_file; print
+                o_file = os.path.splitext(i_file);
+                # print 'o_file'; print o_file; print
+                r_file = o_file[0]+'.tif'
+                w_file = o_file[0]+'.axz '
+                print r_file
+                print w_file
                 if o_file[1] == '.png':
                     #print; print "PNG"
-                    f = '/opt/local/bin/convert ' + i_file + ' -compress None ' + o_file[0] + '.tif' 
-                    subprocess.Popen(f, shell = True)
-                    f = app_path + ' -q -e Rec -p ' + o_file[0] + '.tif ' + o_file[0] + '.axz'
+                    self._shell.run("image0 = load_image('%s')"\
+                        % (i_file))
+                    self._shell.run("image0.save_tiff('%s')"\
+                        % (o_file[0]+'.tif'))
+                    # self._shell.run("del image0")
+                    # f = '/opt/local/bin/convert ' + i_file + ' -compress None ' + o_file[0] + '.tif'  # For using with ImageMagick
+                    # subprocess.Popen(f, shell = True)                                                 # For using with ImageMagick
+                    # f = [app_path, '-q', '-e', 'Rec', '-p', r_file, w_file]
+                    f = app_path + ' -q -e Rec -p ' + r_file + ' ' + w_file
+                    print f
                     p = subprocess.Popen(f, shell = True)
                     while p.returncode is None:
-                        time.sleep(1)
+                        time.sleep(0.1)
                         p.poll()
-                    os.remove(o_file[0] + '.tif')
+                    # print p
+                    os.remove(r_file)
                     # subprocess.Popen("rm " +  o_file[0] + '.tif' , shell=True)  # erasing the created TIF               
                 else:
                     #print; print "TIF"
-                    f = app_path + ' -q -e Rec -p ' + i_file + ' ' + o_file[0] + '.axz'
+                    f = app_path + ' -q -e Rec -p ' + r_file + ' ' + w_file
+                    # f = [app_path, '-q', '-e','Rec', '-p', r_file, w_file]
                     p = subprocess.Popen(f, shell = True)
                     while p.returncode is None:
-                        time.sleep(1)
+                        time.sleep(0.1)
                         p.poll()                
         
-                if params[0]:
-                    axfilename = o_file[0] + '.axz' #; print "axfilename: "; print axfilename; print
-                    axfile = AxFile(axfilename, "")
-                    swap2 = axfile.get_img0()       #; print"swap: "; print swap2; print
-                    name = var_name.get("aruspix_img",\
-                        self._shell.locals)
-                    self._shell.run("%s = %s.swap2.visualize()"\
-                        % (name, self.label ))
+                # if params[0]:
+                #     axfilename = o_file[0] + '.axz' #; print "axfilename: "; print axfilename; print
+                #     axfile = AxFile(axfilename, "")
+                #     swap2 = axfile.get_img0()       #; print"swap: "; print swap2; print
+                #     name = var_name.get("aruspix_img",\
+                #         self._shell.locals)
+                #     self._shell.run("%s = %s.swap2.visualize()"\
+                #         % (name, self.label ))
                 print 'Done!'
                 print
 # GVM
